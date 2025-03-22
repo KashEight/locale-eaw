@@ -6,7 +6,6 @@ import re
 import configparser
 
 UCD_DIR='./ucd'
-UTF8_MAP_FILE = f'{UCD_DIR}/bsd/map.UTF-8'
 ORIGINAL_WIDTH_FILE = f'{UCD_DIR}/bsd/width.txt'
 
 class UCD:
@@ -55,6 +54,15 @@ class UCD:
                 return data_range['name']
         return None
 
+    def get_list_name(self, code):
+        data = self.ucd.get(code)
+        if data:
+            return data['list_name']
+        for data_range in self.ucd_range:
+            if data_range['first'] <= code <= data_range['last']:
+                return data_range['list_name']
+        return None
+
     def load_unicode_data(self):
         ucd = {}
         ucd_range = []
@@ -67,7 +75,8 @@ class UCD:
                     first = row
                     continue
                 if row[1].endswith(', Last>'):
-                    name = first[1].removeprefix('<').removesuffix(', First>')
+                    raw_name = first[1].removeprefix('<').removesuffix(', First>')
+                    name = raw_name
                     if name == 'Private Use':
                         name = 'PRIVATE_USE_AREA'
                     elif name == 'CJK Unified Ideograph Extension A':
@@ -86,6 +95,7 @@ class UCD:
                         'first': int(first[0], 16),
                         'last': int(row[0], 16),
                         'name': name,
+                        'list_name': raw_name,
                         'category': first[2],
                         'combining': first[3],
                         'comment': first[11],
@@ -93,6 +103,7 @@ class UCD:
                     continue
                 ucd[int(row[0], 16)] = {
                     'name': row[1].replace(' ', '_'),
+                    'list_name': row[1],
                     'category': row[2],
                     'combining': row[3],
                     'comment': row[11],
@@ -268,7 +279,7 @@ def generate_list(path: str, code_list: list[int], ucd: UCD):
     print(f'Generating {path} ... ', end='')
     with open(path, 'w', encoding='UTF-8') as out:
         for code in code_list:
-            name = ucd.get_name(code)
+            name = ucd.get_list_name(code)
             c = chr(code)
             print(f'[{c}] U+{code:04X} {name}', file=out)
     print('done')
