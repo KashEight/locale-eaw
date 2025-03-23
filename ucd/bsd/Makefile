@@ -5,11 +5,13 @@ setup:
 .PHONY: UTF-8-EAW-FULLWIDTH
 UTF-8-EAW-FULLWIDTH: setup map.UTF-8 width.txt LC_CTYPE.C.UTF-8
 	localedef -U -c -w ../../dist/UTF-8-EAW-FULLWIDTH-BSD.width.txt -f ./map.UTF-8 -i ./LC_CTYPE.C.UTF-8 ./UTF-8-EAW-FULLWIDTH
+	chmod 755 ./UTF-8-EAW-FULLWIDTH/LC_CTYPE
 	cp ./UTF-8-EAW-FULLWIDTH/LC_CTYPE /usr/local/share/locale/ja_JP.UTF-8/
 
 .PHONY: UTF-8-EAW-CONSOLE
 UTF-8-EAW-CONSOLE: setup map.UTF-8 width.txt LC_CTYPE.C.UTF-8
 	localedef -U -c -w ../../dist/UTF-8-EAW-CONSOLE-BSD.width.txt -f ./map.UTF-8 -i ./LC_CTYPE.C.UTF-8 ./UTF-8-EAW-CONSOLE
+	chmod 755 ./UTF-8-EAW-CONSOLE/LC_CTYPE
 	cp ./UTF-8-EAW-CONSOLE/LC_CTYPE /usr/local/share/locale/ja_JP.UTF-8/
 
 .PHONY: map.UTF-8
